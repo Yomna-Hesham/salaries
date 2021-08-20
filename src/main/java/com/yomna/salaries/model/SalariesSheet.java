@@ -8,7 +8,6 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "salaries_sheet")
 @Getter
 @Setter
 @ToString
@@ -24,4 +23,5 @@ public class SalariesSheet {
     @Column(name = "report_file_name") private String reportFileName;
 
     @ManyToOne @JoinColumn(name = "company_id") private Company company;
+    @ManyToOne @JoinColumn(name = "submitted_by") private User submittedBy;
 }

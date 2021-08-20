@@ -4,6 +4,7 @@ import com.yomna.salaries.client.ResourcesClient;
 import com.yomna.salaries.model.Company;
 import com.yomna.salaries.model.SalariesSheet;
 import com.yomna.salaries.repository.SalariesSheetRepository;
+import com.yomna.salaries.util.AuthorizationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -39,12 +40,18 @@ public class SalariesSheetService {
 
     public SalariesSheet createSheet(Company company, String month, String relativePath, String fileName) {
         SalariesSheet sheet = new SalariesSheet();
+
         sheet.setCompany(company);
         sheet.setMonth(month);
         sheet.setSheetFileName(fileName);
         sheet.setSheetRelativePath(relativePath);
         sheet.setRootPath(rootPath);
+        sheet.setSubmittedBy(AuthorizationUtil.getCurrentAuthorizedUser());
 
         return repository.save(sheet);
+    }
+
+    public void executeSheet(SalariesSheet sheet) {
+
     }
 }
