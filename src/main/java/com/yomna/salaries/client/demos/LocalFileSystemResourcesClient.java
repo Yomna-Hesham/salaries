@@ -17,19 +17,23 @@ public class LocalFileSystemResourcesClient implements ResourcesClient {
     @Override
     public void save(MultipartFile file, String path, String filename) {
         try {
-            logger.info("save() | Start ...");
-            logger.debug("save() |  path: {}", path);
-
-            if (! new File(path).exists()) {
-                if (! new File(path).mkdir()) {
-                    throw new IOException("Cannot make directory '" + path + "'");
-                }
-            }
-
-            file.transferTo(new File(path + filename));
+            _save(file, path, filename);
         } catch (IOException e) {
             logger.error("save() | IOException: {}", e.getMessage());
             throw new CannotReadFileException();
         }
+    }
+
+    private void _save(MultipartFile file, String path, String filename) throws IOException {
+        logger.info("save() | Start ...");
+        logger.debug("save() |  path: {}", path);
+
+        if (! new File(path).exists()) {
+            if (! new File(path).mkdir()) {
+                throw new IOException("Cannot make directory '" + path + "'");
+            }
+        }
+
+        file.transferTo(new File(path + filename));
     }
 }
