@@ -3,6 +3,7 @@ package com.yomna.salaries.util;
 import com.yomna.salaries.exception.CannotReadFileException;
 import com.yomna.salaries.exception.UnsupportedFileTypeException;
 import com.yomna.salaries.exception.WrongCsvSchemeException;
+import lombok.SneakyThrows;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -58,35 +60,45 @@ public abstract class CsvUtil {
         logger.info("validateHeaders() | Start ...");
 
         try {
-            successfullyValidateHeaders();
+            _validateHeaders();
         } catch (IOException e) {
             logger.error("validateHeaders() | Cannot Read File - msg: {}", e.getMessage());
             throw new CannotReadFileException();
         }
     }
 
-    private void successfullyValidateHeaders() throws IOException {
-        logger.info("successfullyValidateHeaders() | Start ...");
+    private void _validateHeaders() throws IOException {
+        logger.info("validateHeaders() | Start ...");
 
         BufferedReader fileReader = new BufferedReader(new
                 InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
         CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT);
         CSVRecord fileHeaders = csvParser.getRecords().get(0);
 
-        logger.debug("successfullyValidateHeaders() | Required Headers Size: {}, File Headers Size: {}",
+        logger.debug("validateHeaders() | Required Headers Size: {}, File Headers Size: {}",
                 headers.size(), fileHeaders.size());
         if (headers.size() != fileHeaders.size()) {
-            logger.error("successfullyValidateHeaders() | Sizes are not equal");
+            logger.error("validateHeaders() | Sizes are not equal");
             throw new WrongCsvSchemeException();
         }
 
         for (int i = 0; i < headers.size(); i++) {
-            logger.debug("successfullyValidateHeaders() | Required Header#{}: {}, File Header#{}: {}",
+            logger.debug("validateHeaders() | Required Header#{}: {}, File Header#{}: {}",
                     i, headers.get(i), i, fileHeaders.get(i));
             if (!headers.get(i).equals(fileHeaders.get(i))) {
-                logger.error("successfullyValidateHeaders() | Headers Mismatch");
+                logger.error("validateHeaders() | Headers Mismatch");
                 throw new WrongCsvSchemeException();
             }
         }
     }
+
+    @SneakyThrows
+    public List<?> parseFile(File file) {
+        List<CSVRecord> records = CSVParser.parse(file, StandardCharsets.UTF_8, CSVFormat.EXCEL.withHeader()).getRecords();
+        logger.debug("Records: {}", records);
+
+        return mapRecords(records);
+    }
+
+    protected abstract List<?> mapRecords(List<CSVRecord> records);
 }

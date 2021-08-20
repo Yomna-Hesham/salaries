@@ -36,4 +36,9 @@ public class LocalFileSystemResourcesClient implements ResourcesClient {
 
         file.transferTo(new File(path + filename));
     }
+
+    @Override
+    public File get(String path, String filename) {
+        return new File(path + filename);
+    }
 }
