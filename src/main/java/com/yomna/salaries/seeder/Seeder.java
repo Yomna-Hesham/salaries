@@ -1,8 +1,9 @@
 package com.yomna.salaries.seeder;
 
-import com.yomna.salaries.model.Company;
-import com.yomna.salaries.model.User;
+import com.yomna.salaries.model.*;
+import com.yomna.salaries.repository.AccountRepository;
 import com.yomna.salaries.repository.CompanyRepository;
+import com.yomna.salaries.repository.IndividualRepository;
 import com.yomna.salaries.repository.UserRepository;
 import com.yomna.salaries.util.AuthorizationUtil;
 import org.slf4j.Logger;
@@ -21,25 +22,47 @@ public class Seeder {
 
     @Autowired private CompanyRepository companyRepository;
     @Autowired private UserRepository userRepository;
+    @Autowired private IndividualRepository individualRepository;
+    @Autowired private AccountRepository accountRepository;
 
     private List<Company> companies;
     private List<User> users;
+    private List<Individual> individuals;
+    private List<Account> accounts;
 
     @PostConstruct
     public void seed() {
         logger.info("seed() | Start ...");
 
+        seedIndividuals();
         seedCompanies();
         seedUsers();
+        seedAccounts();
 
         logger.info("seed() | ... Finish");
+    }
+
+    private void seedIndividuals() {
+        logger.info("seedIndividuals() | Start ...");
+
+        individuals = new ArrayList<>();
+        individuals.add(new Individual(1, "ahmed", "INDIVIDUAL"));
+        individuals.add(new Individual(2, "mahmoud", "INDIVIDUAL"));
+        individuals.add(new Individual(3, "saeed", "INDIVIDUAL"));
+        individuals.add(new Individual(4, "taha", "INDIVIDUAL"));
+
+        individuals = individualRepository.saveAll(individuals);
+        logger.debug("seedIndividuals() | Seeded Individuals: {}", individuals);
+
+        logger.info("seedIndividuals() | ... Finish");
+
     }
 
     private void seedCompanies() {
         logger.info("seedCompanies() | Start ...");
 
         companies = new ArrayList<>();
-        companies.add(new Company(1, "ABC"));
+        companies.add(new Company(1, "ABC", "COMPANY",null));
 
         companies = companyRepository.saveAll(companies);
         logger.debug("seedCompanies() | Seeded Companies: {}", companies);
@@ -62,4 +85,24 @@ public class Seeder {
 
         logger.info("seedUsers() | ... Finish");
     }
+
+    private void seedAccounts() {
+        logger.info("seedAccounts() | Start ...");
+
+        accounts = new ArrayList<>();
+        accounts.add(new Account("13-5H4990-AC", "CURRENT", "EGP", 10000000.0, 10000000.0, companies.get(0), null));
+        accounts.add(new Account("13-117U4R-AI", "SAVING", "EGP", 2500.0, 3000.0, individuals.get(0), companies.get(0)));
+        accounts.add(new Account("13-Q00M68-AI", "SAVING", "USD", 500.0, 500.0, individuals.get(1), companies.get(0)));
+        accounts.add(new Account("13-232355-AI", "SAVING", "SAR", 4790.0, 4700.0, individuals.get(2), companies.get(0)));
+        accounts.add(new Account("13-K4P707-AI", "SAVING", "EGP", 15400.0, 15400.0, individuals.get(3), companies.get(0)));
+
+        accounts = accountRepository.saveAll(accounts);
+        logger.debug("seedAccounts() | Seeded Accounts: {}", accounts);
+
+        companies.get(0).setSalariesAccount(accounts.get(0));
+        companyRepository.save(companies.get(0));
+
+        logger.info("seedAccounts() | ... Finish");
+    }
+
 }

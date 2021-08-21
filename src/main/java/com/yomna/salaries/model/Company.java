@@ -7,12 +7,13 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 @NoArgsConstructor
-@AllArgsConstructor
-public class Company {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "company_id") private Integer id;
-    @Column(name = "name") private String name;
+public class Company extends Customer{
+    @OneToOne @JoinColumn(name = "salaries_account_num") private Account salariesAccount;
+
+    public Company(Integer id, String name, String type, Account salariesAccount) {
+        super(id, name, type);
+        this.salariesAccount = salariesAccount;
+    }
 }
