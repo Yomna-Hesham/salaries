@@ -49,10 +49,10 @@ public class Seeder {
         logger.info("seedIndividuals() | Start ...");
 
         individuals = new ArrayList<>();
-        individuals.add(new Individual(2, "ahmed", "INDIVIDUAL"));
-        individuals.add(new Individual(3, "mahmoud", "INDIVIDUAL"));
-        individuals.add(new Individual(4, "saeed", "INDIVIDUAL"));
-        individuals.add(new Individual(5, "taha", "INDIVIDUAL"));
+        individuals.add(new Individual(2, "ahmed", "INDIVIDUAL", "01234567890"));
+        individuals.add(new Individual(3, "mahmoud", "INDIVIDUAL", "01234567891"));
+        individuals.add(new Individual(4, "saeed", "INDIVIDUAL", "01234567892"));
+        individuals.add(new Individual(5, "taha", "INDIVIDUAL", "01234567893"));
 
         individuals = individualRepository.saveAll(individuals);
         logger.debug("seedIndividuals() | Seeded Individuals: {}", individuals);

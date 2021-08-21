@@ -1,13 +1,16 @@
 package com.yomna.salaries.service;
 
 import com.yomna.salaries.client.CurrencyConversionClient;
+import com.yomna.salaries.client.NotificationClient;
 import com.yomna.salaries.exception.Exception;
 import com.yomna.salaries.exception.NotFoundException;
 import com.yomna.salaries.exception.SalaryTransferFailureException;
 import com.yomna.salaries.model.Salary;
 import com.yomna.salaries.model.entity.Account;
 import com.yomna.salaries.model.entity.Company;
+import com.yomna.salaries.model.entity.Individual;
 import com.yomna.salaries.repository.AccountRepository;
+import com.yomna.salaries.template.SalaryTransferSmsTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,7 @@ public class AccountService {
     @Value("${accounts.balance.min}") private Double minBalance;
     @Autowired private AccountRepository repository;
     @Autowired private CurrencyConversionClient currencyConversionClient;
+    @Autowired private NotificationClient notificationClient;
 
     public List<Salary> transferSalaries(List<Salary> salaries, Company company) {
         salaries.forEach(salary -> {
@@ -66,6 +70,7 @@ public class AccountService {
         validateSalaryTransfer(salary, company, account);
 
         transfer(company.getSalariesAccount(), account, salary.getSalary(), salary.getCurrency());
+        notifyCustomer((Individual) account.getCustomer());
     }
 
     private void validateSalaryTransfer(Salary salary) {
@@ -141,5 +146,9 @@ public class AccountService {
 
         List<Account> updatedAccounts = repository.saveAll(Arrays.asList(from, to));
         logger.debug("transfer() | Updated Accounts: {}", updatedAccounts);
+    }
+
+    private void notifyCustomer(Individual customer) {
+        notificationClient.sendSms(customer.getMobile(), new SalaryTransferSmsTemplate().toString());
     }
 }
