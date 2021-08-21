@@ -10,6 +10,7 @@ import lombok.ToString;
 public class Salary {
     private String name;
     private String accountNum;
-    private Float salary;
+    private Double salary;
     private String currency;
+    private String failureReason;
 }

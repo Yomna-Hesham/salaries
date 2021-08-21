@@ -27,6 +27,7 @@ public class SalariesSheetService {
     @Autowired private SalariesSheetRepository repository;
     @Autowired private ResourcesClient resourcesClient;
     @Autowired private SalariesCsvUtil salariesCsvUtil;
+    @Autowired private AccountService accountService;
 
     public SalariesSheet saveSheet(MultipartFile file, Company company, String month) {
         String relativePath = generateSheetRelativePath(company);
@@ -66,5 +67,6 @@ public class SalariesSheetService {
         List<Salary> salaries = (List<Salary>) salariesCsvUtil.parseFile(file);
         logger.debug("Salaries: {}", salaries);
 
+        salaries = accountService.transferSalaries(salaries, sheet.getCompany());
     }
 }

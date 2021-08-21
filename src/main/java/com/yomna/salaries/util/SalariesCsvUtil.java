@@ -25,7 +25,7 @@ public class SalariesCsvUtil extends CsvUtil{
             salary.setAccountNum(record.get("account_num"));
             salary.setSalary(
                     !record.get("salary").equals("") ?
-                            Float.parseFloat(record.get("salary")) : null);
+                            Double.parseDouble(record.get("salary")) : null);
             salary.setCurrency(record.get("currency"));
 
             salaries.add(salary);

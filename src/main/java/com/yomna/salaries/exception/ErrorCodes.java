@@ -6,4 +6,6 @@ public class ErrorCodes {
     public static final String CANNOT_READ_FILE = "1003";
 
     public static final String NOT_FOUND = "4004";
+
+    public static final String SALARY_TRANSFER_FAILURE = "5000";
 }

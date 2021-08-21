@@ -10,6 +10,7 @@ import javax.persistence.*;
 @ToString(callSuper = true)
 @NoArgsConstructor
 public class Company extends Customer{
+    @ToString.Exclude
     @OneToOne @JoinColumn(name = "salaries_account_num") private Account salariesAccount;
 
     public Company(Integer id, String name, String type, Account salariesAccount) {
