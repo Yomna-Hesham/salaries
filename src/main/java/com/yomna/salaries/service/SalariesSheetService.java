@@ -1,12 +1,14 @@
 package com.yomna.salaries.service;
 
 import com.yomna.salaries.client.ResourcesClient;
+import com.yomna.salaries.model.Salary;
 import com.yomna.salaries.model.entity.Company;
 import com.yomna.salaries.model.entity.SalariesSheet;
-import com.yomna.salaries.model.Salary;
+import com.yomna.salaries.model.entity.User;
 import com.yomna.salaries.repository.SalariesSheetRepository;
 import com.yomna.salaries.util.AuthorizationUtil;
 import com.yomna.salaries.util.SalariesCsvUtil;
+import com.yomna.salaries.util.SalariesReportCsvUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -27,11 +30,12 @@ public class SalariesSheetService {
     @Autowired private SalariesSheetRepository repository;
     @Autowired private ResourcesClient resourcesClient;
     @Autowired private SalariesCsvUtil salariesCsvUtil;
+    @Autowired private SalariesReportCsvUtil reportCsvUtil;
     @Autowired private AccountService accountService;
 
     public SalariesSheet saveSheet(MultipartFile file, Company company, String month) {
         String relativePath = generateSheetRelativePath(company);
-        String filename = generateFileName(file, month);
+        String filename = generateSheetFileName(file, month);
         resourcesClient.save(file, rootPath+relativePath, filename);
 
         return createSheet(company, month, relativePath, filename);
@@ -41,7 +45,7 @@ public class SalariesSheetService {
         return  "/"+company.getId()+"#"+company.getName()+"/";
     }
 
-    private String generateFileName(MultipartFile file, String month) {
+    private String generateSheetFileName(MultipartFile file, String month) {
         String originalFilename = file.getOriginalFilename();
         String extension = originalFilename.substring(originalFilename.lastIndexOf('.'));
         long timestamp = Instant.now().getEpochSecond();
@@ -55,7 +59,7 @@ public class SalariesSheetService {
         sheet.setCompany(company);
         sheet.setMonth(month);
         sheet.setSheetFilename(filename);
-        sheet.setSheetRelativePath(relativePath);
+        sheet.setRelativePath(relativePath);
         sheet.setRootPath(rootPath);
         sheet.setSubmittedBy(AuthorizationUtil.getCurrentAuthorizedUser());
 
@@ -63,10 +67,31 @@ public class SalariesSheetService {
     }
 
     public void executeSheet(SalariesSheet sheet) {
-        File file = resourcesClient.get(sheet.getRootPath() + sheet.getSheetRelativePath(), sheet.getSheetFilename());
-        List<Salary> salaries = (List<Salary>) salariesCsvUtil.parseFile(file);
-        logger.debug("Salaries: {}", salaries);
+        File salariesFile = resourcesClient.get(sheet.getRootPath() + sheet.getRelativePath(), sheet.getSheetFilename());
+        List<Salary> salaries = (List<Salary>) salariesCsvUtil.parseFile(salariesFile);
 
         salaries = accountService.transferSalaries(salaries, sheet.getCompany());
+        String reportCsv = reportCsvUtil.formatDataToCsv(salaries);
+
+        String reportFilename = generateReportFilename(sheet);
+        File reportFile = resourcesClient.save(reportCsv, rootPath + sheet.getRelativePath(), reportFilename);
+
+        sheet.setReportFileName(reportFilename);
+        sheet.setEvaluatedAt(LocalDateTime.now());
+        repository.save(sheet);
+
+        notifyUser(sheet.getSubmittedBy(), reportFile);
+    }
+
+    private String generateReportFilename(SalariesSheet sheet) {
+        String sheetFilename = sheet.getSheetFilename();
+        String extension = sheetFilename.substring(sheetFilename.lastIndexOf('.'));
+        sheetFilename = sheetFilename.substring(0, sheetFilename.lastIndexOf('.'));
+
+        return sheetFilename + "-report" + extension;
+    }
+
+    private void notifyUser(User user, File attachment) {
+
     }
 }

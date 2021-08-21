@@ -6,15 +6,13 @@ import com.yomna.salaries.exception.WrongCsvSchemeException;
 import lombok.SneakyThrows;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -101,4 +99,17 @@ public abstract class CsvUtil {
     }
 
     protected abstract List<?> mapRecords(List<CSVRecord> records);
+
+    @SneakyThrows
+    public String formatDataToCsv(List<?> data) {
+        StringWriter writer = new StringWriter();
+
+        CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL.withHeader(headers.toArray(new String[0])));
+        csvPrinter.printRecords(mapData(data));
+        csvPrinter.flush();
+
+        return writer.toString();
+    }
+
+    protected abstract List<List<String>> mapData(List<?> data);
 }

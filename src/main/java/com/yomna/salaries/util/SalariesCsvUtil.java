@@ -33,4 +33,9 @@ public class SalariesCsvUtil extends CsvUtil{
 
         return salaries;
     }
+
+    @Override
+    protected List<List<String>> mapData(List<?> data) {
+        return null;
+    }
 }

@@ -17,7 +17,7 @@ public class SalariesSheet {
     @Column(name = "sheet_id") private Integer id;
     @Column(name = "month") private String month;
     @Column(name = "root_path") private String rootPath;
-    @Column(name = "relative_path") private String sheetRelativePath;
+    @Column(name = "relative_path") private String relativePath;
     @Column(name = "sheet_filename") private String sheetFilename;
     @Column(name = "evaluated_at") private LocalDateTime evaluatedAt;
     @Column(name = "report_file_name") private String reportFileName;
