@@ -1,11 +1,13 @@
 package com.yomna.salaries.service;
 
+import com.yomna.salaries.client.NotificationClient;
 import com.yomna.salaries.client.ResourcesClient;
 import com.yomna.salaries.model.Salary;
 import com.yomna.salaries.model.entity.Company;
 import com.yomna.salaries.model.entity.SalariesSheet;
 import com.yomna.salaries.model.entity.User;
 import com.yomna.salaries.repository.SalariesSheetRepository;
+import com.yomna.salaries.template.SalariesExecReportEmailTemplate;
 import com.yomna.salaries.util.AuthorizationUtil;
 import com.yomna.salaries.util.SalariesCsvUtil;
 import com.yomna.salaries.util.SalariesReportCsvUtil;
@@ -32,6 +34,7 @@ public class SalariesSheetService {
     @Autowired private SalariesCsvUtil salariesCsvUtil;
     @Autowired private SalariesReportCsvUtil reportCsvUtil;
     @Autowired private AccountService accountService;
+    @Autowired private NotificationClient notificationClient;
 
     public SalariesSheet saveSheet(MultipartFile file, Company company, String month) {
         String relativePath = generateSheetRelativePath(company);
@@ -80,7 +83,7 @@ public class SalariesSheetService {
         sheet.setEvaluatedAt(LocalDateTime.now());
         repository.save(sheet);
 
-        notifyUser(sheet.getSubmittedBy(), reportFile);
+        notifyUser(sheet.getSubmittedBy(), reportFile, salaries);
     }
 
     private String generateReportFilename(SalariesSheet sheet) {
@@ -91,7 +94,11 @@ public class SalariesSheetService {
         return sheetFilename + "-report" + extension;
     }
 
-    private void notifyUser(User user, File attachment) {
-
+    private void notifyUser(User user, File attachment, List<Salary> salaries) {
+        long failureCount = salaries.stream().filter(salary -> salary.getFailureReason() != null).count();
+        notificationClient.sendEmail(
+                user.getEmail(),
+                new SalariesExecReportEmailTemplate((long) salaries.size(), failureCount).toString(),
+                attachment);
     }
 }
