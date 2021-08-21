@@ -98,6 +98,7 @@ public class SalariesSheetService {
         long failureCount = salaries.stream().filter(salary -> salary.getFailureReason() != null).count();
         notificationClient.sendEmail(
                 user.getEmail(),
+                "Salaries Sheet Execution Report",
                 new SalariesExecReportEmailTemplate((long) salaries.size(), failureCount).toString(),
                 attachment);
     }

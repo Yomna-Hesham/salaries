@@ -4,5 +4,5 @@ import java.io.File;
 
 public interface NotificationClient {
     void sendSms(String mobileNum, String msg);
-    void sendEmail(String email, String body, File attachment);
+    void sendEmail(String email, String subject, String body, File attachment);
 }
