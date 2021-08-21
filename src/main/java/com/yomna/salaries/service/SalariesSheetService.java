@@ -1,8 +1,8 @@
 package com.yomna.salaries.service;
 
 import com.yomna.salaries.client.ResourcesClient;
-import com.yomna.salaries.model.Company;
-import com.yomna.salaries.model.SalariesSheet;
+import com.yomna.salaries.model.entity.Company;
+import com.yomna.salaries.model.entity.SalariesSheet;
 import com.yomna.salaries.model.Salary;
 import com.yomna.salaries.repository.SalariesSheetRepository;
 import com.yomna.salaries.util.AuthorizationUtil;

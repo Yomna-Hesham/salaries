@@ -1,8 +1,8 @@
 package com.yomna.salaries.service;
 
 import com.yomna.salaries.exception.NotFoundException;
-import com.yomna.salaries.model.Company;
-import com.yomna.salaries.model.SalariesSheet;
+import com.yomna.salaries.model.entity.Company;
+import com.yomna.salaries.model.entity.SalariesSheet;
 import com.yomna.salaries.repository.CompanyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

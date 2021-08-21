@@ -1,7 +1,7 @@
 package com.yomna.salaries.util;
 
 
-import com.yomna.salaries.model.User;
+import com.yomna.salaries.model.entity.User;
 
 public class AuthorizationUtil {
     private static User currentAuthorizedUser;

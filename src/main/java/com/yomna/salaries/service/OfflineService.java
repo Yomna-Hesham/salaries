@@ -1,6 +1,6 @@
 package com.yomna.salaries.service;
 
-import com.yomna.salaries.model.SalariesSheet;
+import com.yomna.salaries.model.entity.SalariesSheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

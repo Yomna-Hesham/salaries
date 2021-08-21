@@ -1,4 +1,4 @@
-package com.yomna.salaries.model;
+package com.yomna.salaries.model.entity;
 
 import lombok.Getter;
 import lombok.Setter;

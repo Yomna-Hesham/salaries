@@ -1,6 +1,6 @@
 package com.yomna.salaries.repository;
 
-import com.yomna.salaries.model.User;
+import com.yomna.salaries.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

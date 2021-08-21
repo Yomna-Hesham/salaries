@@ -1,6 +1,9 @@
 package com.yomna.salaries.seeder;
 
-import com.yomna.salaries.model.*;
+import com.yomna.salaries.model.entity.Account;
+import com.yomna.salaries.model.entity.Company;
+import com.yomna.salaries.model.entity.Individual;
+import com.yomna.salaries.model.entity.User;
 import com.yomna.salaries.repository.AccountRepository;
 import com.yomna.salaries.repository.CompanyRepository;
 import com.yomna.salaries.repository.IndividualRepository;
